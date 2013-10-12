@@ -315,7 +315,6 @@ static int glue_open(cdata, interp, objc, objv) //<<<
 		TEST_OK(Get_flagsFromObj(interp, objv[2], &flags));
 
 	handle = cwiid_open(&bdaddr, flags);
-	//abort();
 	if (handle == NULL) {
 		Tcl_SetErrorCode(interp, "CWIID", "OPEN", NULL);
 		THROW_ERROR("Could not open connection");
