@@ -142,10 +142,10 @@ static int Get_flagsFromObj(interp, obj, flags) //<<<
 	int			oc, i, index;
 	Tcl_Obj**	ov;
 	static const char* flag_names[] = {
-		"CWIID_FLAG_MESG_IFC",
-		"CWIID_FLAG_CONTINUOUS",
-		"CWIID_FLAG_REPEAT_BTN",
-		"CWIID_FLAG_NONBLOCK",
+		"MESG_IFC",
+		"CONTINUOUS",
+		"REPEAT_BTN",
+		"NONBLOCK",
 		NULL
 	};
 	int map[] = {

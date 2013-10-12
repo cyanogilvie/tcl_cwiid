@@ -25,8 +25,8 @@ test open-2.2 {too many args} -body { #<<<
 } -returnCodes error -result {Wrong # of arguments.  Must be "bdaddr ?flags?"}
 #>>>
 test open-2.3 {bad flags} -body { #<<<
-	cwiid::open $test_bdaddr {CWIID_FLAG_NONBLOCK CWIID_FLAG_BAD}
-} -returnCodes error -result {bad flag "CWIID_FLAG_BAD": must be CWIID_FLAG_MESG_IFC, CWIID_FLAG_CONTINUOUS, CWIID_FLAG_REPEAT_BTN, or CWIID_FLAG_NONBLOCK}
+	cwiid::open $test_bdaddr {NONBLOCK BAD}
+} -returnCodes error -result {bad flag "BAD": must be MESG_IFC, CONTINUOUS, REPEAT_BTN, or NONBLOCK}
 #>>>
 test open-2.4 {bad bdaddr: too short} -body { #<<<
 	cwiid::open 00:21:BD:26:FC

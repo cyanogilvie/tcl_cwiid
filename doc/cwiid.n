@@ -188,12 +188,12 @@ These are the flags available to the \fBcwiid::open\fR command and the
 lB lB
 lB l.
 Flag	Description
-CWIID_FLAG_MESG_IFC	Enable the message based interfaces (message
+MESG_IFC	Enable the message based interfaces (message
 	callback and cwiid_get_mesg).
-CWIID_FLAG_CONTINUOUS	Enable continuous wiimote reports.
-CWIID_FLAG_REPEAT_BTN	Deliver a button message for each button value
+CONTINUOUS	Enable continuous wiimote reports.
+REPEAT_BTN	Deliver a button message for each button value
 	received, even if it hasn't changed.
-CWIID_FLAG_NONBLOCK	Causes cwiid_get_mesg to fail instead of block
+NONBLOCK	Causes cwiid_get_mesg to fail instead of block
 	if no messages are ready.
 .TE
 .in -0.25i
