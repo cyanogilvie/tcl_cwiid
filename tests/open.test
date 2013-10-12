@@ -1,0 +1,55 @@
+if {{::tcltest} ni [namespace children]} {
+	package require tcltest 2.3.3
+	namespace import ::tcltest::*
+}
+
+package require cwiid
+cwiid::_testmode 1
+source [file join [file dirname [file normalize [info script]]] dev_info.tcl]
+
+test open-1.1 {open a connection} -body { #<<<
+	set wiimote	[cwiid::open $test_bdaddr]
+} -cleanup {
+	if {[info exists wiimote]} {
+		rename $wiimote {}
+		unset wiimote
+	}
+} -match regexp result {^cwiid[0-9]+$} -errorOutput {^Closed cwiid handle\n$}
+#>>>
+test open-2.1 {no args} -body { #<<<
+	cwiid::open
+} -returnCodes error -result {wrong # args: should be "open bdaddr ?flags?"}
+#>>>
+test open-2.2 {too many args} -body { #<<<
+	cwiid::open $test_bdaddr {} foo
+} -returnCodes error -result {wrong # args: should be "open bdaddr ?flags?"}
+#>>>
+test open-2.3 {bad flags} -body { #<<<
+	cwiid::open $test_bdaddr {CWIID_FLAG_NONBLOCK CWIID_FLAG_BAD}
+} -returnCodes error -result {bad flag "CWIID_FLAG_BAD": must be CWIID_FLAG_MESG_IFC, CWIID_FLAG_CONTINUOUS, CWIID_FLAG_REPEAT_BTN, or CWIID_FLAG_NONBLOCK}
+#>>>
+test open-2.4 {bad bdaddr: too short} -body { #<<<
+	cwiid::open 00:21:BD:26:FC
+} -returnCodes error -result {Expecting a bluetooth address like 00:21:BD:26:FC:47, got: "00:21:BD:26:FC"}
+#>>>
+test open-2.5 {bad bdaddr: non-hex part} -body { #<<<
+	cwiid::open 00:21:BX:26:FC:47
+} -returnCodes error -result {Invalid address part: "BX"}
+#>>>
+test open-2.6 {bad bdaddr: empty part} -body { #<<<
+	cwiid::open 00:21::26:FC:47
+} -returnCodes error -result {Invalid address part: ""}
+#>>>
+test open-2.7 {bad bdaddr: out of range part} -body { #<<<
+	cwiid::open 00:FF:100:26:FC:47
+} -returnCodes error -result {Invalid address part: "100"}
+#>>>
+test open-2.8 {bad bdaddr: trailing garbage part} -body { #<<<
+	cwiid::open 00:21:BDfoo:26:FC:47
+} -returnCodes error -result {Invalid address part: "BDfoo"}
+#>>>
+
+::tcltest::cleanupTests
+return
+
+# vim: ft=tcl foldmethod=marker foldmarker=<<<,>>> ts=4 shiftwidth=4

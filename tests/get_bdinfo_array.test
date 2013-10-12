@@ -1,0 +1,49 @@
+if {{::tcltest} ni [namespace children]} {
+	package require tcltest 2.3.3
+	namespace import ::tcltest::*
+}
+
+package require cwiid
+cwiid::_testmode 1
+source [file join [file dirname [file normalize [info script]]] dev_info.tcl]
+
+proc compare_dicts {a b} { #<<<
+	dict for {k v} $a {
+		if {![dict exists $b $k]} {return 0}
+		if {[dict get $a $k] ne [dict get $b $k]} {return 0}
+		dict unset b $k
+	}
+	expr {[dict size $b] == 0}
+}
+
+#>>>
+
+test get_bdinfo_array-1.1 {basic functionality} -body { #<<<
+	compare_dicts [lindex [cwiid::get_bdinfo_array] 0] $test_device
+} -result 1
+#>>>
+test get_bdinfo_array-2.1 {too many args} -body { #<<<
+	cwiid::get_bdinfo_array -1 2 {} foo
+} -returnCodes error -result {wrong # args: should be "get_bdinfo_array ?dev_id? ?timeout? ?flags?"}
+#>>>
+test get_bdinfo_array-2.2 {bad devnum} -body { #<<<
+	cwiid::get_bdinfo_array foo 2 {}
+} -returnCodes error -result {expected integer but got "foo"}
+#>>>
+test get_bdinfo_array-2.3 {bad timeout} -body { #<<<
+	cwiid::get_bdinfo_array -1 foo {}
+} -returnCodes error -result {expected integer but got "foo"}
+#>>>
+test get_bdinfo_array-2.4 {negative timeout} -body { #<<<
+	cwiid::get_bdinfo_array -1 -1 {}
+} -returnCodes error -result {timeout cannot be negative}
+#>>>
+test get_bdinfo_array-2.5 {bad flags} -body { #<<<
+	cwiid::get_bdinfo_array -1 2 {BT_NO_WIIMOTE_FILTER FOO}
+} -returnCodes error -result {bad flag "FOO": must be BT_NO_WIIMOTE_FILTER}
+#>>>
+
+::tcltest::cleanupTests
+return
+
+# vim: ft=tcl foldmethod=marker foldmarker=<<<,>>> ts=4 shiftwidth=4

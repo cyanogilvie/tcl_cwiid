@@ -1,0 +1,208 @@
+.TH cwiid n 0.1 "Tcl-Extensions"
+.HS cwiid tcl
+.BE
+
+'\" # CS - begin code excerpt
+.de CS
+.RS
+.nf
+.ta .25i .5i .75i 1i
+..
+'\" # CE - end code excerpt
+.de CE
+.fi
+.RE
+..
+.BS
+.SH NAME
+cwiid \- Tcl wrapper for the libcwiid library for interfacing with Wii Remotes
+.SH SYNOPSIS
+\fBcwiid::find_wiimote\fI bdaddr timeout\fR
+.br
+\fBcwiid::list_wiimotes\fR
+.br
+\fBcwiid::get_bdinfo_array\fI ?dev_id? ?timeout? ?flags?\fR
+.br
+\fBcwiid::open\fI bdaddr ?flags?\fR
+.br
+\fIhandle \fBget_id\fR
+.br
+\fIhandle \fBset_data\fI data\fR
+.br
+\fIhandle \fBget_data\fR
+.br
+\fIhandle \fBenable\fI flags\fR
+.br
+\fIhandle \fBdisable\fI flags\fR
+.br
+\fIhandle \fBset_mesg_callback\fI cb\fR
+.br
+\fIhandle \fBget_mesg\fR
+.br
+\fIhandle \fBget_state\fR
+.br
+\fIhandle \fBget_acc_cal\fI ext_type\fR
+.br
+\fIhandle \fBget_balance_cal\fR
+.br
+\fIhandle \fBcommand\fI command ?flags?\fR
+.br
+\fIhandle \fBsend_rpt\fI flags remote data\fR
+.br
+\fIhandle \fBrequest_status\fR
+.br
+\fIhandle \fBset_led\fI led\fR
+.br
+\fIhandle \fBset_rumble\fI active\fR
+.br
+\fIhandle \fBset_rpt_mode\fI mode\fR
+.br
+\fIhandle \fBread\fI flags offset len\fR
+.br
+\fIhandle \fBwrite\fI flags offset data\fR
+.SH DESCRIPTION
+This package provides a low-level API for interfacing with Nintendo Wii remotes
+and their extensions, based on (and closely conforming to) the libcwiid
+library.
+.SH COMMANDS
+.PP
+.TP
+\fBcwiid::find_wiimote\fI bdaddr timeout\fR
+TODO: figure this out and document it.
+.TP
+\fBcwiid::list_wiimotes\fR
+Returns a list of bluetooth addresses for remotes found.  Remotes must be in discoverable mode
+(by pressing buttons (1) and (2) simultaneously) for them to be found by this command.
+.TP
+\fBcwiid::get_bdinfo_array\fI ?dev_id? ?timeout? ?flags?\fR
+Returns a list of dictionaries, one for each device found.  \fIdev_id\fR
+identifies a particular device to query, or -1 to query all devices (the
+default).  \fItimeout\fR gives the time in seconds to wait for responses
+(defaulting to 2).  Each dictionary has the keys:
+.in +0.25i
+.TS
+lB lB
+lB l.
+Key	Description
+bdaddr	The bluetooth address of the remote.
+btclass	The bluetooth class.
+name	The name reported by the device.
+.TE
+.in -0.25i
+
+Currently there is only one \fIflag\fR supported:
+.in +0.25i
+.TS
+lB lB
+lB l.
+Flag	Description
+BT_NO_WIIMOTE_FILTER	Return all bluetooth devices,
+	not just Wiimotes.
+.TE
+.in -0.25i
+.TP
+\fBcwiid::open\fI bdaddr ?flags?\fR
+Open a connection to the Wiimote with the bluetooth address \fIbdaddr\fR.
+Returns a handle command which is used to interact with the device.
+\fIflags\fR is a list of 0 or more flags (see \fBCONNECTION FLAGS\fR).  Throws
+an error if a connection could not be established to the device with the error
+code {CWIID OPEN}.
+.br
+To close a connection, rename the handle command to {}:
+.PP
+.CS
+set handle [cwiid::open 00:11:22:33:44:55]
+rename $handle {}
+.CE
+.SH HANDLE METHODS
+The \fBcwiid::open\fR command returns the name of a command used to
+interact with the connection.  The general form of the commands is:
+.PP
+.in +1i
+\fIhandle method ?arg ...?\fR
+.in -1i
+.PP
+\fIhandle\fR is the name of the command returned by \fBcwiid::open\fR, and
+\fImethod\fR is a method name documented below:
+.TP
+\fIhandle \fBget_id\fR
+Returns the device id for the connection.
+.TP
+\fIhandle \fBset_data\fI data\fR
+TODO: document
+.TP
+\fIhandle \fBget_data\fR
+TODO: document
+.TP
+\fIhandle \fBenable\fI flags\fR
+Enables the settings given in \fIflags\fR for this connection.  See
+\fBCONNECTION FLAGS\fR for the allowed values.
+.TP
+\fIhandle \fBdisable\fI flags\fR
+Disables the settings given in \fIflags\fR for this connection.  See
+\fBCONNECTION FLAGS\fR for the allowed values.
+.TP
+\fIhandle \fBset_mesg_callback\fI cb\fR
+TODO: document
+.TP
+\fIhandle \fBget_mesg\fR
+TODO: document
+.TP
+\fIhandle \fBget_state\fR
+TODO: document
+.TP
+\fIhandle \fBget_acc_cal\fI ext_type\fR
+TODO: document
+.TP
+\fIhandle \fBget_balance_cal\fR
+TODO: document
+.TP
+\fIhandle \fBcommand\fI command ?flags?\fR
+TODO: document
+.TP
+\fIhandle \fBsend_rpt\fI flags remote data\fR
+TODO: document
+.TP
+\fIhandle \fBrequest_status\fR
+TODO: document
+.TP
+\fIhandle \fBset_led\fI led\fR
+TODO: document
+.TP
+\fIhandle \fBset_rumble\fI active\fR
+TODO: document
+.TP
+\fIhandle \fBset_rpt_mode\fI mode\fR
+TODO: document
+.TP
+\fIhandle \fBread\fI flags offset len\fR
+TODO: document
+.TP
+\fIhandle \fBwrite\fI flags offset data\fR
+TODO: document
+.SH CONNECTION FLAGS
+These are the flags available to the \fBcwiid::open\fR command and the
+\fIhandle \fBenable\fR and \fIhandle \fBdisable\fR methods:
+.in +0.25i
+.TS
+lB lB
+lB l.
+Flag	Description
+CWIID_FLAG_MESG_IFC	Enable the message based interfaces (message
+	callback and cwiid_get_mesg).
+CWIID_FLAG_CONTINUOUS	Enable continuous wiimote reports.
+CWIID_FLAG_REPEAT_BTN	Deliver a button message for each button value
+	received, even if it hasn't changed.
+CWIID_FLAG_NONBLOCK	Causes cwiid_get_mesg to fail instead of block
+	if no messages are ready.
+.TE
+.in -0.25i
+.SH AUTHORS
+Written by cyan.ogilvie@gmail.com.  Some of the documentation in this manpage
+is taken from the libcwiid documentation.
+.SH LICENSE
+This package is under the same license as the libcwiid library: GPL
+.SH "SEE ALSO"
+The libcwiid documentation: http://abstrakraft.org/cwiid/wiki/libcwiid
+.SH KEYWORDS
+wiimote, wii, remote, tcl

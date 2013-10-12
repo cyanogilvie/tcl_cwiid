@@ -1,0 +1,29 @@
+if {{::tcltest} ni [namespace children]} {
+	package require tcltest 2.3.3
+	namespace import ::tcltest::*
+}
+
+package require cwiid
+cwiid::_testmode 1
+source [file join [file dirname [file normalize [info script]]] dev_info.tcl]
+
+set wiimote [cwiid::open $test_bdaddr]
+
+test get_id-1.1 {basic functionality} -body { #<<<
+	$wiimote get_id
+} -match regexp -result {[0-9]+}
+#>>>
+test get_id-2.1 {too many args} -body { #<<<
+	$wiimote get_id foo
+} -returnCodes error -match regexp -result {wrong # args: should be "cwiid[0-9]+ get_id"}
+#>>>
+
+if {[info exists wiimote]} {
+	cwiid::_testmode 0
+	rename $wiimote {}
+}
+
+::tcltest::cleanupTests
+return
+
+# vim: ft=tcl foldmethod=marker foldmarker=<<<,>>> ts=4 shiftwidth=4

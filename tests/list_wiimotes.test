@@ -1,0 +1,22 @@
+if {{::tcltest} ni [namespace children]} {
+	package require tcltest 2.3.3
+	namespace import ::tcltest::*
+}
+
+package require cwiid
+cwiid::_testmode 1
+source [file join [file dirname [file normalize [info script]]] dev_info.tcl]
+
+test list_wiimotes-1.1 {basic functionality} -body { #<<<
+	tcl::mathop::in $test_bdaddr [cwiid::list_wiimotes]
+} -result 1
+#>>>
+test list_wiimotes-2.1 {too many args} -body { #<<<
+	cwiid::list_wiimotes foo
+} -returnCodes error -result {wrong # args: should be "list_wiimotes"}
+#>>>
+
+::tcltest::cleanupTests
+return
+
+# vim: ft=tcl foldmethod=marker foldmarker=<<<,>>> ts=4 shiftwidth=4
