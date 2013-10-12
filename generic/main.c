@@ -1,5 +1,4 @@
 #include <inttypes.h>
-#include <stdlib.h>
 #include "tclstuff.h"
 #include <tcl.h>
 #include <cwiid.h>
@@ -10,14 +9,22 @@
 static int g_testmode = 0;
 typedef int method_handler(cwiid_wiimote_t* handle, Tcl_Interp* interp, int objc, Tcl_Obj *const objv[]);
 
+/*
 #define EVAL(args ...) _eval(args, NULL)
-static int _eval(Tcl_Interp* interp, int flags, Tcl_Obj* obj, ...) //<<<
+static int _eval(Tcl_Interp* interp, int flags, ...) //<<<
 {
 	Tcl_Obj*	cmd = Tcl_NewObj();
+	Tcl_Obj*	obj;
 	int			res;
+	va_list		ap;
 
-	while (obj)
-		TEST_OK(Tcl_ListObjAppendElement(interp, cmd, obj++));
+	va_start(ap, flags);
+	obj = va_arg(ap, Tcl_Obj*);
+	while (obj) {
+		TEST_OK(Tcl_ListObjAppendElement(interp, cmd, obj));
+		obj = va_arg(ap, Tcl_Obj*);
+	}
+	va_end(ap);
 
 	Tcl_IncrRefCount(cmd);
 	res = Tcl_EvalObjEx(interp, cmd, flags || TCL_EVAL_DIRECT);
@@ -26,6 +33,8 @@ static int _eval(Tcl_Interp* interp, int flags, Tcl_Obj* obj, ...) //<<<
 }
 
 //>>>
+*/
+
 static void close_handle(ClientData cdata) //<<<
 {
 	cwiid_wiimote_t*	handle = (cwiid_wiimote_t*)cdata;
@@ -51,7 +60,7 @@ static int method_not_implemented(cwiid_wiimote_t* handle, Tcl_Interp* interp, i
 {
 	THROW_ERROR("Not implemented yet");
 }
-
+//>>>
 static int handle_cmd(cdata, interp, objc, objv) //<<<
 	ClientData		cdata;
 	Tcl_Interp*		interp;
@@ -118,42 +127,10 @@ static int Get_bdaddrFromObj(interp, obj, bdaddr) //<<<
 	Tcl_Obj*		obj;
 	bdaddr_t*		bdaddr;
 {
-	int			objc, i;
-	Tcl_Obj**	objv;
-	long int	part;
-	const char*	str;
-	char*		endptr;
-	int			len;
-
-	TEST_OK(EVAL(
-		interp, 0,
-		Tcl_NewStringObj("split", -1), obj, Tcl_NewStringObj(":", 1)
-	));
-
-	TEST_OK(Tcl_ListObjGetElements(interp, Tcl_GetObjResult(interp), &objc, &objv));
-
-	if (objc != 6)
-		goto badaddr;
-
-	for (i=0; i<6; i++) {
-		str = Tcl_GetStringFromObj(objv[i], &len);
-		if (len == 0)
-			goto badpart;
-
-		part = strtol(str, &endptr, 16);
-		if (endptr - str != len || part < 0 || part > 255)
-			goto badpart;
-
-		bdaddr->b[i] = (uint8_t)part;
-	}
-
+	if (str2ba(Tcl_GetString(obj), bdaddr) != 0)
+		THROW_ERROR("Expecting a bluetooth address like 00:21:BD:26:FC:47, got: \"",
+				Tcl_GetString(obj), "\"");
 	return TCL_OK;
-
-badaddr:
-	THROW_ERROR("Expecting a bluetooth address like 00:21:BD:26:FC:47, got: \"", Tcl_GetString(objv[1]), "\"");
-
-badpart:
-	THROW_ERROR("Invalid address part: \"", str, "\"");
 }
 
 //>>>
@@ -234,6 +211,8 @@ static int glue_list_wiimotes(cdata, interp, objc, objv) //<<<
 		ba2str(&bdinfo[i].bdaddr, ba_str);
 		TEST_OK(Tcl_ListObjAppendElement(interp, res, Tcl_NewStringObj(ba_str, -1)));
 	}
+
+	Tcl_SetObjResult(interp, res);
 	return TCL_OK;
 }
 
@@ -336,6 +315,7 @@ static int glue_open(cdata, interp, objc, objv) //<<<
 		TEST_OK(Get_flagsFromObj(interp, objv[2], &flags));
 
 	handle = cwiid_open(&bdaddr, flags);
+	//abort();
 	if (handle == NULL) {
 		Tcl_SetErrorCode(interp, "CWIID", "OPEN", NULL);
 		THROW_ERROR("Could not open connection");
@@ -367,6 +347,8 @@ int Cwiid_Init(Tcl_Interp* interp) //<<<
 	NEW_CMD(NS "open", glue_open);
 
 	NEW_CMD(NS "_testmode", glue_testmode);
+
+	TEST_OK(Tcl_PkgProvide(interp, PACKAGE_NAME, PACKAGE_VERSION));
 
 	return TCL_OK;
 }

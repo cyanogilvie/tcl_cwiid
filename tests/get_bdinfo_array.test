@@ -24,7 +24,7 @@ test get_bdinfo_array-1.1 {basic functionality} -body { #<<<
 #>>>
 test get_bdinfo_array-2.1 {too many args} -body { #<<<
 	cwiid::get_bdinfo_array -1 2 {} foo
-} -returnCodes error -result {wrong # args: should be "get_bdinfo_array ?dev_id? ?timeout? ?flags?"}
+} -returnCodes error -result {Wrong # of arguments.  Must be "?dev_id? ?timeout? ?flags?"}
 #>>>
 test get_bdinfo_array-2.2 {bad devnum} -body { #<<<
 	cwiid::get_bdinfo_array foo 2 {}

@@ -13,7 +13,7 @@ test list_wiimotes-1.1 {basic functionality} -body { #<<<
 #>>>
 test list_wiimotes-2.1 {too many args} -body { #<<<
 	cwiid::list_wiimotes foo
-} -returnCodes error -result {wrong # args: should be "list_wiimotes"}
+} -returnCodes error -result {Wrong # of arguments.  Must be ""}
 #>>>
 
 ::tcltest::cleanupTests

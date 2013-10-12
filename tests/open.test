@@ -14,15 +14,15 @@ test open-1.1 {open a connection} -body { #<<<
 		rename $wiimote {}
 		unset wiimote
 	}
-} -match regexp result {^cwiid[0-9]+$} -errorOutput {^Closed cwiid handle\n$}
+} -match regexp -result {^cwiid[0-9]+$}
 #>>>
 test open-2.1 {no args} -body { #<<<
 	cwiid::open
-} -returnCodes error -result {wrong # args: should be "open bdaddr ?flags?"}
+} -returnCodes error -result {Wrong # of arguments.  Must be "bdaddr ?flags?"}
 #>>>
 test open-2.2 {too many args} -body { #<<<
 	cwiid::open $test_bdaddr {} foo
-} -returnCodes error -result {wrong # args: should be "open bdaddr ?flags?"}
+} -returnCodes error -result {Wrong # of arguments.  Must be "bdaddr ?flags?"}
 #>>>
 test open-2.3 {bad flags} -body { #<<<
 	cwiid::open $test_bdaddr {CWIID_FLAG_NONBLOCK CWIID_FLAG_BAD}
@@ -34,19 +34,19 @@ test open-2.4 {bad bdaddr: too short} -body { #<<<
 #>>>
 test open-2.5 {bad bdaddr: non-hex part} -body { #<<<
 	cwiid::open 00:21:BX:26:FC:47
-} -returnCodes error -result {Invalid address part: "BX"}
+} -returnCodes error -result {Expecting a bluetooth address like 00:21:BD:26:FC:47, got: "00:21:BX:26:FC:47"}
 #>>>
 test open-2.6 {bad bdaddr: empty part} -body { #<<<
 	cwiid::open 00:21::26:FC:47
-} -returnCodes error -result {Invalid address part: ""}
+} -returnCodes error -result {Expecting a bluetooth address like 00:21:BD:26:FC:47, got: "00:21::26:FC:47"}
 #>>>
 test open-2.7 {bad bdaddr: out of range part} -body { #<<<
 	cwiid::open 00:FF:100:26:FC:47
-} -returnCodes error -result {Invalid address part: "100"}
+} -returnCodes error -result {Expecting a bluetooth address like 00:21:BD:26:FC:47, got: "00:FF:100:26:FC:47"}
 #>>>
 test open-2.8 {bad bdaddr: trailing garbage part} -body { #<<<
 	cwiid::open 00:21:BDfoo:26:FC:47
-} -returnCodes error -result {Invalid address part: "BDfoo"}
+} -returnCodes error -result {Expecting a bluetooth address like 00:21:BD:26:FC:47, got: "00:21:BDfoo:26:FC:47"}
 #>>>
 
 ::tcltest::cleanupTests
