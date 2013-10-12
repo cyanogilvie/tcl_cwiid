@@ -24,6 +24,32 @@ puts "Got id: [$wiimote get_id]"
 rename $wiimote {}
 ```
 
+API
+---
+
+cwiid::find_wiimote bdaddr timeout
+cwiid::list_wiimotes
+cwiid::get_bdinfo_array ?dev_id? ?timeout? ?flags?
+cwiid::open bdaddr ?flags?
+handle get_id
+handle set_data data
+handle get_data
+handle enable flags
+handle disable flags
+handle set_mesg_callback cb
+handle get_mesg
+handle get_state
+handle get_acc_cal ext_type
+handle get_balance_cal
+handle command command ?flags?
+handle send_rpt flags remote data
+handle request_status
+handle set_led led
+handle set_rumble active
+handle set_rpt_mode mode
+handle read flags offset len
+handle write flags offset data
+
 Status
 ------
 
