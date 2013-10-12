@@ -4,3 +4,8 @@ core
 Makefile
 pkgIndex.tcl
 configure
+autom4te.cache
+config.log
+config.status
+libcwiid0.1.so
+
