@@ -26,7 +26,7 @@ test open-2.2 {too many args} -body { #<<<
 #>>>
 test open-2.3 {bad flags} -body { #<<<
 	cwiid::open $test_bdaddr {NONBLOCK BAD}
-} -returnCodes error -result {bad flag "BAD": must be MESG_IFC, CONTINUOUS, REPEAT_BTN, or NONBLOCK}
+} -returnCodes error -result {bad flag "BAD": must be MESG_IFC, CONTINUOUS, REPEAT_BTN, NONBLOCK, or MOTIONPLUS}
 #>>>
 test open-2.4 {bad bdaddr: too short} -body { #<<<
 	cwiid::open 00:21:BD:26:FC

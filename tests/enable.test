@@ -1,0 +1,52 @@
+if {{::tcltest} ni [namespace children]} {
+	package require tcltest 2.3.3
+	namespace import ::tcltest::*
+}
+
+package require cwiid
+cwiid::_testmode 1
+source [file join [file dirname [file normalize [info script]]] dev_info.tcl]
+
+test enable-1.1 {basic functionality} -body { #<<<
+	if {![info exists wiimote]} {set wiimote [cwiid::open $test_bdaddr]}
+	$wiimote enable {NONBLOCK CONTINUOUS}
+	#$wiimote enable {}
+} -result {}
+#>>>
+test enable-2.1 {no args} -body { #<<<
+	if {![info exists wiimote]} {set wiimote [cwiid::open $test_bdaddr]}
+	$wiimote enable
+} -returnCodes error -result {Wrong # of arguments.  Must be "enable flags"}
+#>>>
+test enable-2.2 {too many args} -body { #<<<
+	if {![info exists wiimote]} {set wiimote [cwiid::open $test_bdaddr]}
+	$wiimote enable {NONBLOCK} foo
+} -returnCodes error -result {Wrong # of arguments.  Must be "enable flags"}
+#>>>
+
+test disable-1.1 {basic functionality} -body { #<<<
+	if {![info exists wiimote]} {set wiimote [cwiid::open $test_bdaddr]}
+	$wiimote disable {NONBLOCK CONTINUOUS}
+} -result {}
+#>>>
+test disable-2.1 {no args} -body { #<<<
+	if {![info exists wiimote]} {set wiimote [cwiid::open $test_bdaddr]}
+	$wiimote disable
+} -returnCodes error -result {Wrong # of arguments.  Must be "disable flags"}
+#>>>
+test disable-2.2 {too many args} -body { #<<<
+	if {![info exists wiimote]} {set wiimote [cwiid::open $test_bdaddr]}
+	$wiimote disable {NONBLOCK} foo
+} -returnCodes error -result {Wrong # of arguments.  Must be "disable flags"}
+#>>>
+
+if {[info exists wiimote]} {
+	cwiid::_testmode 0
+	rename $wiimote {}
+	unset wiimote
+}
+
+::tcltest::cleanupTests
+return
+
+# vim: ft=tcl foldmethod=marker foldmarker=<<<,>>> ts=4 shiftwidth=4
