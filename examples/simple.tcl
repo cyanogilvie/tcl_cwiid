@@ -10,30 +10,33 @@ if {[llength $wiimotes] == 0} {
 
 set bdaddr	[dict get [lindex $wiimotes 0] bdaddr]
 
-set wiimote	[cwiid::open $bdaddr {MOTIONPLUS CONTINUOUS MESG_IFC}]
+set wiimote	[cwiid::open $bdaddr {CONTINUOUS MESG_IFC}]
 puts "connected, id: [$wiimote get_id]"
-$wiimote set_rpt_mode {
-	STATUS
-	BTN
-	ACC
-	IR
-	NUNCHUK
-	CLASSIC
-	BALANCE
-	MOTIONPLUS
-}
-puts "set rpt_mode"
-
 $wiimote set_mesg_callback [list apply {
 	info {
 		puts "in mesg callback: $info"
 	}
 }]
 
+#$wiimote set_rpt_mode {
+#	STATUS
+#	BTN
+#	ACC
+#	IR
+#	NUNCHUK
+#	CLASSIC
+#	BALANCE
+#	MOTIONPLUS
+#	EXT
+#}
+$wiimote set_rpt_mode {EXT ACC BTN STATUS}
+puts "set rpt_mode"
+$wiimote enable MOTIONPLUS
+puts "enabled MOTIONPLUS"
+
 proc read_mesgs wiimote {
 	puts "waiting for a message"
 	set info	[$wiimote get_mesg]
-	puts "Got message: ($info)"
 	puts "----------------------------------------------"
 	puts "Timestamp: [dict get $info sec]:[dict get $info nsec]"
 	foreach mesg [dict get $info mesgs] {

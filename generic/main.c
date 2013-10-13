@@ -324,12 +324,10 @@ static Tcl_Obj* decode_mesg(union cwiid_mesg* mesg) //<<<
 			Tcl_DictObjPut(NULL, v, keys->psi, Tcl_NewIntObj(mesg->motionplus_mesg.angle_rate[CWIID_PSI]));
 			Tcl_DictObjPut(NULL, m, keys->angle_rate, v);
 			v = Tcl_NewObj();
-			/*
-			Tcl_DictObjPut(NULL, v, keys->x, Tcl_NewIntObj(mesg->motionplus_mesg.low_speed[CWIID_X]));
-			Tcl_DictObjPut(NULL, v, keys->y, Tcl_NewIntObj(mesg->motionplus_mesg.low_speed[CWIID_Y]));
-			Tcl_DictObjPut(NULL, v, keys->z, Tcl_NewIntObj(mesg->motionplus_mesg.low_speed[CWIID_Z]));
+			Tcl_DictObjPut(NULL, v, keys->phi, Tcl_NewIntObj(mesg->motionplus_mesg.low_speed[CWIID_PHI]));
+			Tcl_DictObjPut(NULL, v, keys->theta, Tcl_NewIntObj(mesg->motionplus_mesg.low_speed[CWIID_THETA]));
+			Tcl_DictObjPut(NULL, v, keys->psi, Tcl_NewIntObj(mesg->motionplus_mesg.low_speed[CWIID_PSI]));
 			Tcl_DictObjPut(NULL, m, keys->low_speed, v);
-			*/
 			break;
 
 		case CWIID_MESG_ERROR:
@@ -355,13 +353,12 @@ static Tcl_Obj* decode_mesg(union cwiid_mesg* mesg) //<<<
 static void _mesg_handler(cwiid_wiimote_t* handle, int mesg_count, union cwiid_mesg mesg[], struct timespec* timestamp) //<<<
 {
 	int				i;
-	Tcl_HashTable*	mesg_callbacks;
+	Tcl_HashTable*	mesg_callbacks = Tcl_GetThreadData(&thread_mesg_callbacks, sizeof(*mesg_callbacks));
 	Tcl_Obj*		mesg_list;
 	Tcl_HashEntry*	entry;
 	Tcl_Obj*		info = Tcl_NewObj();
 	struct static_keys*	keys = Tcl_GetThreadData(&thread_static_keys, sizeof(*keys));
 
-	mesg_callbacks = Tcl_GetThreadData(&thread_mesg_callbacks, sizeof(*mesg_callbacks));
 	entry = Tcl_FindHashEntry(mesg_callbacks, handle);
 	if (entry == NULL) return;
 
@@ -382,7 +379,7 @@ static void _mesg_handler(cwiid_wiimote_t* handle, int mesg_count, union cwiid_m
 static int method_set_mesg_callback(cwiid_wiimote_t* handle, Tcl_Interp* interp, int objc, Tcl_Obj *const objv[]) //<<<
 {
 	int				len, new, res;
-	Tcl_HashTable*	mesg_callbacks;
+	Tcl_HashTable*	mesg_callbacks = Tcl_GetThreadData(&thread_mesg_callbacks, sizeof(*mesg_callbacks));
 	Tcl_HashEntry*	entry;
 	Tcl_Obj*		prev_cb = NULL;
 
@@ -740,6 +737,7 @@ int Cwiid_Init(Tcl_Interp* interp) //<<<
 	if (!keys->initialized) {
 		init_static_keys(keys);
 		Tcl_InitHashTable(mesg_callbacks, TCL_ONE_WORD_KEYS);
+		fprintf(stderr, "Initialized mesg_callbacks: %s\n", Tcl_HashStats(mesg_callbacks));
 	}
 
 	NEW_CMD(NS "find_wiimote", glue_find_wiimote);
